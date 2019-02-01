@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
+import Toggle from 'react-toggle-component'
+import "react-toggle-component/styles.css"
 
 function Square(props) {
     return(
@@ -56,6 +58,7 @@ class Game extends React.Component {
             }],
             xIsNext: true,
             stepNumber: 0,
+            ascendingOrder: true,
         };
     }
 
@@ -119,8 +122,13 @@ class Game extends React.Component {
               />
             </div>
             <div className="game-info">
+                <div>
+                    <Toggle label={this.state.ascendingOrder ? "Ascending" : "Descending"} 
+                    onToggle={() => { this.setState( { ascendingOrder : !this.state.ascendingOrder })}}
+                    />
+                </div>
               <div>{status}</div>
-              <ol>{moves}</ol>
+              <ol reversed = {!this.state.ascendingOrder}>{this.state.ascendingOrder ? moves : moves.slice().reverse()}</ol>
             </div>
           </div>
         );
