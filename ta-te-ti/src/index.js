@@ -6,7 +6,7 @@ import "react-toggle-component/styles.css"
 
 function Square(props) {
     return(
-        <button className="square" onClick={props.onClick}>
+        <button className={props.winnerStyle ? "winnerSquare" : "square"} onClick={props.onClick}>
             {props.value}
         </button>
     );
@@ -19,6 +19,7 @@ class Board extends React.Component {
                 value={this.props.squares[i]} 
                 onClick={()=>this.props.onClick(i,row,column)}
                 key = {i}
+                winnerStyle = {this.props.winners ? this.props.winners.includes(i) : false}
             />
         );
     }
@@ -29,7 +30,8 @@ class Board extends React.Component {
                 <div className="board-row" key={`col${x}`}>
                     {
                         [...Array(rows)].map((_,y) => {
-                            return this.renderSquare(x*columns+y,y,x);        
+                            const index = x*columns+y;
+                            return this.renderSquare(index,y,x);        
                         })
                     }
                 </div>
@@ -38,11 +40,7 @@ class Board extends React.Component {
     }
     render() {
         return(
-            <div>
-                {
-                    this.generateBoard(3,3)
-                }
-            </div>
+            <div>{this.generateBoard(3,3)}</div>
         )
     }
 }
@@ -107,7 +105,7 @@ class Game extends React.Component {
 
         let status;
         if (winner) {
-            status = 'Winner: ' + winner;
+            status = `Winner: ${this.state.xIsNext ? "O" : "X"}  winners: ${winner}`;
         }
         else {
             status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
@@ -119,6 +117,7 @@ class Game extends React.Component {
               <Board 
                 squares={current.squares}
                 onClick={(i,row,column) => this.handleClick(i,row,column)}
+                winners ={winner}
               />
             </div>
             <div className="game-info">
@@ -149,7 +148,7 @@ function calculateWinner(squares) {
     for (let i = 0; i < lines.length; i++) {
         const [a,b,c] = lines[i];
         if (squares[a] && squares[a]=== squares[b] && squares[a] === squares[c]) {
-            return squares[a];
+            return [a,b,c];
         }
     }
     return null;
